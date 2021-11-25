@@ -1,0 +1,734 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>second_axiom_system_for_definition_operator</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library second_axiom_system_for_definition_operator</h1>
+
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+In this file we define the second axiom system for d_prop.
+Natural deduction rules for every connector are proven.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">main</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">DP</span> := <span class="id" title="var">D_Prop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">DT</span> := <span class="id" title="var">D_Term</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">second_d_logical_axiom</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>, <span class="id" title="var">C</span> -&gt; <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_if_exun</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">p</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_exists_unique</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>) (<span class="id" title="var">d_prop_specify</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_def</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>) <span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_if_not_exun</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">p</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_neg</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_exists_unique</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_def</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>) (<span class="id" title="var">d_letter</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span>)))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_k_ax</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span>))                             <br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_s_ax</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>)))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_abs_ax</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> (<span class="id" title="var">d_wrong</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">d_wrong</span> <span class="id" title="var">C</span>)) <span class="id" title="var">a</span>)             <br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_special_case_ax</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span> : <span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_prop_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_forall_const_ax</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_prop_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>)))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_forall_mp_ax</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_implies</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">f</span> <span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>)))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">sd_universal_closure</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>) <span class="id" title="var">f</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">definition_of_proofs</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">k</span>:<span class="id" title="var">C</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">second_d_proof</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sd_theory_axiom</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>, <span class="id" title="var">T</span> <span class="id" title="var">p</span> -&gt; <span class="id" title="var">second_d_proof</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sd_logical_axiom</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>, <span class="id" title="var">second_d_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> -&gt; <span class="id" title="var">second_d_proof</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sd_implies_elim</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">second_d_proof</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">SDCPIW</span>: <span class="id" title="var">classical_propositional_implies_wrong_system</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">definition_of_proofs</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_letter_special_case</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) (<span class="id" title="var">d_prop_letter_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">f</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">sd_weakening</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>) (<span class="id" title="var">pr</span> : <span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>) (<span class="id" title="var">U</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">SUBTH</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>, <span class="id" title="var">T</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">U</span> <span class="id" title="var">x</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">pr</span>} : <span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">U</span> <span class="id" title="var">f</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">pr</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sd_theory_axiom</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span> <span class="id" title="var">t</span> =&gt; <span class="id" title="var">sd_theory_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">U</span> <span class="id" title="var">p</span> (<span class="id" title="var">SUBTH</span> <span class="id" title="var">p</span> <span class="id" title="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sd_logical_axiom</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span> <span class="id" title="var">f0</span> =&gt; <span class="id" title="var">sd_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">U</span> <span class="id" title="var">p</span> <span class="id" title="var">f0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sd_implies_elim</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">pr1</span> <span class="id" title="var">pr2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sd_implies_elim</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">U</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="var">sd_weakening</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) <span class="id" title="var">pr1</span> <span class="id" title="var">U</span> <span class="id" title="var">SUBTH</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sd_weakening</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">a</span> <span class="id" title="var">pr2</span> <span class="id" title="var">U</span> <span class="id" title="var">SUBTH</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_weakening_hypothesis</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">h</span> <span class="id" title="var">x</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pr</span>:<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">x</span>):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">add_item</span> (<span class="id" title="var">DP</span> <span class="id" title="var">C</span>) <span class="id" title="var">T</span> <span class="id" title="var">h</span>) <span class="id" title="var">x</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sd_weakening</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">x</span> <span class="id" title="var">pr</span> (<span class="id" title="var">add_item</span> (<span class="id" title="var">DP</span> <span class="id" title="var">C</span>) <span class="id" title="var">T</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">base_item</span> (<span class="id" title="var">DP</span> <span class="id" title="var">C</span>) <span class="id" title="var">T</span> <span class="id" title="var">h</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">add_hyp_d</span>:= (<span class="id" title="keyword">fun</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span> =&gt; <span class="id" title="var">add_item</span> (<span class="id" title="var">DP</span> <span class="id" title="var">C</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">the_deduction_theorem_for_sd</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">k</span>:<span class="id" title="var">C</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">h</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">sd_implies_intro</span> (<span class="id" title="var">x</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>) (<span class="id" title="var">pr</span>: <span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">add_hyp_d</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">h</span>) <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="keyword">struct</span> <span class="id" title="var">pr</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">h</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">the_deduction_theorem_for_sd</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">the_generalization_rule_for_sd</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">k</span>:<span class="id" title="var">C</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">sd_forall_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pr</span>: <span class="id" title="var">second_d_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>) (<span class="id" title="var">d_theory_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>) <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="keyword">struct</span> <span class="id" title="var">pr</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">the_generalization_rule_for_sd</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">substitution_in_proofs</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">second_d_logical_axiom_substitution</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k_c</span>:<span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span>) (<span class="id" title="var">l</span>: <span class="id" title="var">second_d_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k_c</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k_d</span>:<span class="id" title="var">D</span>) (<span class="id" title="var">env</span>: <span class="id" title="var">C</span> -&gt; <span class="id" title="var">DT</span> <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">eqk</span>: <span class="id" title="var">env</span> <span class="id" title="var">k_c</span> = <span class="id" title="var">d_letter</span> <span class="id" title="var">D</span> <span class="id" title="var">k_d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="keyword">struct</span> <span class="id" title="var">l</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_logical_axiom</span> <span class="id" title="var">D</span> <span class="id" title="var">k_d</span> (<span class="id" title="var">d_prop_substitution</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">D</span> <span class="id" title="var">env</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">second_d_proof_substitution</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span> <span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k_c</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">k_d</span>:<span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">env</span>: <span class="id" title="var">C</span> -&gt; <span class="id" title="var">DT</span> <span class="id" title="var">D</span>) (<span class="id" title="var">eqk</span>: <span class="id" title="var">env</span> <span class="id" title="var">k_c</span> = <span class="id" title="var">d_letter</span> <span class="id" title="var">D</span> <span class="id" title="var">k_d</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span>) (<span class="id" title="var">pr</span>:<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k_c</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">pr</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">D</span> <span class="id" title="var">k_d</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_theory_substitution</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">D</span> <span class="id" title="var">env</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_prop_substitution</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">D</span> <span class="id" title="var">env</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">substitution_in_proofs</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">change_of_context_in_proofs</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_proof_context_change</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">D</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">env</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">D</span> (<span class="id" title="var">env</span> <span class="id" title="var">k</span>) (<span class="id" title="var">d_theory_context_change</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">D</span> <span class="id" title="var">env</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_prop_change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">D</span> <span class="id" title="var">env</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">change_of_context_in_proofs</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">natural_deduction_inference_rules</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">natural_deduction_rules_for_propositional_connectors</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">k</span>:<span class="id" title="var">C</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;H |- a":= (<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">H</span> <span class="id" title="var">a</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 61).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">wr</span> := (<span class="id" title="var">d_wrong</span> <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_neg_intro</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">add_hyp_d</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">a</span> |- <span class="id" title="var">wr</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">d_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_neg_elim</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">d_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">wr</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_classical_absurdity</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">add_hyp_d</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>) |- <span class="id" title="var">wr</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_and_intro</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">d_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_and_left_elim</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">d_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_and_right_elim</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">d_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_or_left_intro</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">d_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_or_right_intro</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">d_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_or_elim2</span>:  <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span> |- <span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span> |- <span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span> |- <span class="id" title="var">d_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_or_elim</span>:  <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add_hyp_d</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">a</span> |- <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add_hyp_d</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">b</span> |- <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span> |- <span class="id" title="var">d_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">natural_deduction_rules_for_propositional_connectors</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">natural_deduction_rules_for_quantifiers</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_forall_inverse_intro</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>-&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>) (<span class="id" title="var">d_theory_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_exists_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>-&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">g</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add_hyp_d</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_theory_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>) <span class="id" title="var">f</span>) (<span class="id" title="var">d_prop_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_forall_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_prop_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_exists_intro</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_prop_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">natural_deduction_rules_for_quantifiers</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">natural_deduction_inference_rules</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">equality_manipulation_tools</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equal_belongs_equiv_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">prod</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">t</span>) (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span>))) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">a</span>) (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">b</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equal_belongs_implies_left_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">prod</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">t</span>) (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span>))) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">a</span>) (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">b</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equal_belongs_implies_right_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">prod</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">t</span>) (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">t</span>))) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">b</span>) (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">a</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equality_reflexivity</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equality_symmetry</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) -&gt; <span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equality_transitivity</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_unique_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt;<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">s</span> <span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_unique</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_prop_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_prop_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">t</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">equality_manipulation_tools</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">equivalence_manipulation_tools</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_reflexivity_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>): <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">p</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cpiw_equiv_reflexivity</span> (<span class="id" title="var">SDCPIW</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span>) <span class="id" title="var">p</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_symmetry_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span> <span class="id" title="var">q</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>): <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">q</span> <span class="id" title="var">p</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cpiw_equiv_symmetry</span> (<span class="id" title="var">SDCPIW</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span>) <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_transitivity_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>): <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">r</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cpiw_equiv_transitivity</span> (<span class="id" title="var">SDCPIW</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span>) <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_implies_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>): <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">d_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>)) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cpiw_equiv_implies</span> (<span class="id" title="var">SDCPIW</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span>) <span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_neg_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span> <span class="id" title="var">q</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>): <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>) (<span class="id" title="var">d_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">q</span>)).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_and_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>): <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">d_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>)).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_or_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>): <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">d_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>)).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_equiv_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>): <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>)).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_forall_proof</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>) (<span class="id" title="var">d_theory_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span>) -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>) (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>)).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_exists_proof</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>) (<span class="id" title="var">d_theory_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span>) -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>) (<span class="id" title="var">d_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>)).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_unique_proof</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>) (<span class="id" title="var">d_theory_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span>) -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_unique</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>) (<span class="id" title="var">d_unique</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>)).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_forall_letter_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">k</span> <span class="id" title="var">l</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_prop_letter_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">l</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equal_elim_belongs_letter</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">s</span> <span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">t</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">prod</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> (<span class="id" title="var">d_letter</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> (<span class="id" title="var">d_letter</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_letter</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>) <span class="id" title="var">s</span>) (<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_letter</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>) <span class="id" title="var">t</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_equivalence_exists_unique_proof</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>) (<span class="id" title="var">d_theory_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span>) -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_exists_unique</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>) (<span class="id" title="var">d_exists_unique</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_extensionality_of_definitions</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span> <span class="id" title="var">q</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">k</span>) (<span class="id" title="var">d_theory_constant_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">p</span> <span class="id" title="var">q</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_def</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>) (<span class="id" title="var">d_def</span> <span class="id" title="var">C</span> <span class="id" title="var">q</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">sd_general_equality_elimination_prop</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">k</span>:<span class="id" title="var">D</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="keyword">Type</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">env1</span> <span class="id" title="var">env2</span>: <span class="id" title="var">C</span> -&gt; <span class="id" title="var">DT</span> <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">eqpr</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span>, <span class="id" title="var">second_d_proof</span> <span class="id" title="var">D</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">D</span> (<span class="id" title="var">env1</span> <span class="id" title="var">x</span>) (<span class="id" title="var">env2</span> <span class="id" title="var">x</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="keyword">struct</span> <span class="id" title="var">p</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">D</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">D</span> (<span class="id" title="var">d_prop_substitution</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">D</span> <span class="id" title="var">env1</span>) (<span class="id" title="var">d_prop_substitution</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> <span class="id" title="var">D</span> <span class="id" title="var">env2</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sd_general_equality_elimination_term</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">k</span>:<span class="id" title="var">D</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="keyword">Type</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">env1</span> <span class="id" title="var">env2</span>: <span class="id" title="var">C</span> -&gt; <span class="id" title="var">DT</span> <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">eqpr</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span>, <span class="id" title="var">second_d_proof</span> <span class="id" title="var">D</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">D</span> (<span class="id" title="var">env1</span> <span class="id" title="var">x</span>) (<span class="id" title="var">env2</span> <span class="id" title="var">x</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="keyword">struct</span> <span class="id" title="var">t</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">D</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equal</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">D</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_term_substitution</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">D</span> <span class="id" title="var">env1</span>) (<span class="id" title="var">d_term_substitution</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">D</span> <span class="id" title="var">env2</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equal_prop_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">s</span> <span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>) (<span class="id" title="var">p</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">t</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_prop_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">p</span>) (<span class="id" title="var">d_prop_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">p</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_equal_term_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">s</span> <span class="id" title="var">t</span>:<span class="id" title="var">DT</span> <span class="id" title="var">C</span>) (<span class="id" title="var">u</span>: <span class="id" title="var">DT</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">t</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_term_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">u</span>) (<span class="id" title="var">d_term_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">u</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">introduction_of_unicity</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We define a tool for introducing two fresh variables to any context; 
+      then we build a natural inference rule to derive the unicity of the 
+      objects potentially satisfying a given predicate. The definition of
+      "d_unique C p" expressing the unicity of an object satisfying p is 
+      somewhat obfuscated and we hope that this tool, along with 
+      "sd_unique_intro" defined above, will help convince the user that 
+      "d_unique" has actually the intended behavior. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">k</span>:<span class="id" title="var">C</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">p</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">add_two_vars</span>:<span class="id" title="keyword">Type</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">atv_new_var1</span>:<span class="id" title="var">add_two_vars</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">atv_new_var2</span>:<span class="id" title="var">add_two_vars</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">atv_base_var</span>: <span class="id" title="var">C</span> -&gt; <span class="id" title="var">add_two_vars</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">d_theory_embed_atv</span>:= <span class="id" title="var">d_theory_context_change</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">add_two_vars</span> <span class="id" title="var">atv_base_var</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We introduce shorter notations in order (hopfully) to make the statement of the 
+      result more clear 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">A</span>:= <span class="id" title="var">add_two_vars</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">x1</span> := <span class="id" title="var">atv_new_var1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">x2</span> := <span class="id" title="var">atv_new_var2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">k'</span>:= (<span class="id" title="var">atv_base_var</span> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">p_A</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_prop_change_of_context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">p</span> (<span class="id" title="var">option</span> <span class="id" title="var">A</span>) (<span class="id" title="var">extend_map_to_bound_variables</span> <span class="id" title="var">C</span> <span class="id" title="var">A</span> <span class="id" title="var">atv_base_var</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">T_and_p_new_var1_and_p_new_var2</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add_hyp_d</span> <span class="id" title="var">A</span> (<span class="id" title="var">add_hyp_d</span> <span class="id" title="var">A</span> <span class="id" title="var">d_theory_embed_atv</span> (<span class="id" title="var">d_prop_letter_specify</span> <span class="id" title="var">A</span> <span class="id" title="var">x1</span> <span class="id" title="var">p_A</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_prop_letter_specify</span> <span class="id" title="var">A</span> <span class="id" title="var">x2</span> <span class="id" title="var">p_A</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This auxiliary map will be used in this proof only
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">cvar_aux</span> (<span class="id" title="var">l</span>:<span class="id" title="var">add_two_vars</span>): <span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">l</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">atv_new_var1</span> =&gt; <span class="id" title="var">Some</span> <span class="id" title="var">None</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">atv_new_var2</span> =&gt; <span class="id" title="var">None</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">atv_base_var</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">Some</span> (<span class="id" title="var">Some</span> <span class="id" title="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_unique_intro</span>: <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">A</span> <span class="id" title="var">k'</span> <span class="id" title="var">T_and_p_new_var1_and_p_new_var2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equal</span> <span class="id" title="var">A</span> (<span class="id" title="var">d_letter</span> <span class="id" title="var">A</span> <span class="id" title="var">x1</span>) (<span class="id" title="var">d_letter</span> <span class="id" title="var">A</span> <span class="id" title="var">x2</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_unique</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">introduction_of_unicity</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">equivalence_manipulation_tools</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">proof_of_the_fd_axiom_about_d_def</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_exun_belongs_letter_prop</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_letter</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>) (<span class="id" title="var">d_def</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_exun_belongs_letter_prop</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">x</span> <span class="id" title="var">p</span>)                  <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_exun_belongs_letter_term</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">t</span>: <span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_letter</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>) <span class="id" title="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_exun_belongs_letter_term</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">x</span> <span class="id" title="var">t</span>)                  <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_exun_belongs_prop_term</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span>: <span class="id" title="var">DP</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>: <span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_def</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span>) <span class="id" title="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_exun_belongs_prop_term</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">t</span>)                  <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+ 
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sd_exun_belongs_term_term</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">s</span> <span class="id" title="var">t</span>: <span class="id" title="var">DT</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_exun_belongs_term_term</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">s</span> <span class="id" title="var">t</span>)                  <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">proof_of_the_fd_axiom_about_d_def</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">conversions</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">sd_first_d_logical_axiom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">p</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span>) (<span class="id" title="var">l</span>:<span class="id" title="var">first_d_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">l</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">fd_to_sd</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pr</span>: <span class="id" title="var">first_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">pr</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">fd_second_d_logical_axiom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">p</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span>) (<span class="id" title="var">l</span>:<span class="id" title="var">second_d_logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">l</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">first_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">sd_to_fd</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">DP</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pr</span>: <span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">pr</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">first_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">conversions</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">conservativity_theorems</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_conservativity_theorem</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">prod</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">sf_to_d_theory</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>) (<span class="id" title="var">sf_to_d_translation</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">second_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> (<span class="id" title="var">sf_to_d_theory</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>) (<span class="id" title="var">sf_to_d_translation</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_prop_language_conservativity_property</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">p</span> (<span class="id" title="var">sf_to_d_translation</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_exun_translation_prop</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">fd_conservatively_equal_equal</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">k</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> <span class="id" title="var">b</span>: <span class="id" title="var">DT</span> <span class="id" title="var">C</span>) (<span class="id" title="var">ce</span>: <span class="id" title="var">conservatively_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">ce</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">first_d_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span> (<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">second_d_term_language_conservativity_property</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">t</span> : <span class="id" title="var">DT</span> <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">DP</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">second_d_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> (<span class="id" title="var">sf_to_d_translation_term</span> <span class="id" title="var">C</span> (<span class="id" title="var">d_exun_translation_term</span> <span class="id" title="var">C</span> <span class="id" title="var">k</span> <span class="id" title="var">t</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">conservativity_theorems</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">main</span>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

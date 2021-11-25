@@ -1,0 +1,1155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>first_order_set_language</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library first_order_set_language</h1>
+
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+In this file we define first order logic for a signature consisting of a single
+binary relationship symbol "belongs". Introducing an equality symbol is not necessary;
+indeed we define "x equals y" by "<span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">z</span></span> <span class="inlinecode">(<span class="id" title="var">z</span></span> <span class="inlinecode"><span class="id" title="var">belongs</span></span> <span class="inlinecode"><span class="id" title="var">to</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode"><span class="id" title="var">iff</span></span> <span class="inlinecode"><span class="id" title="var">z</span></span> <span class="inlinecode"><span class="id" title="var">b</span>)</span> and <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">t</span></span>
+<span class="inlinecode">(<span class="id" title="var">x</span></span> <span class="inlinecode"><span class="id" title="var">belongs</span></span> <span class="inlinecode"><span class="id" title="var">to</span></span> <span class="inlinecode"><span class="id" title="var">t</span></span> <span class="inlinecode"><span class="id" title="var">iff</span></span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode"><span class="id" title="var">belongs</span></span> <span class="inlinecode"><span class="id" title="var">to</span></span> <span class="inlinecode"><span class="id" title="var">t</span>)</span>" and it turns out that this definition of equality
+satisfies the Leibniz property. Moreover, when (one of the equivalent versions of) the 
+extensionality axiom is assumed, it can be proven that two objects are equal in this sense
+if and only if they have the same elements.    
+ 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">basic_definitions</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+the map below does basically the same thing as "option_map"; 
+but we didn't know the latter at the time the majority of this program was written.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">extend_map_to_bound_variables</span> (<span class="id" title="var">C</span> <span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>): (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) -&gt; (<span class="id" title="var">option</span> <span class="id" title="var">D</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">option_rect</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> : <span class="id" title="var">option</span> <span class="id" title="var">C</span> =&gt; <span class="id" title="var">option</span> <span class="id" title="var">D</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> : <span class="id" title="var">C</span> =&gt; <span class="id" title="var">Some</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>)) <span class="id" title="var">None</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In order to implement first order formulas, we need a mechanism to manage bound variables.
+    We use nested abstract syntax, as in https://math.unice.fr/~ah/div/fsubwf.pdf .
+    New variables are added to he cirent context with the option operator.  
+
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">Set_Formula</span>: <span class="id" title="keyword">Type</span> -&gt; <span class="id" title="keyword">Type</span>:=<br/>
+&nbsp;&nbsp;|<span class="id" title="var">sf_belongs</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>,<span class="id" title="var">C</span> -&gt; <span class="id" title="var">C</span> -&gt; <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;|<span class="id" title="var">sf_wrong</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>, <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;|<span class="id" title="var">sf_implies</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>, <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;|<span class="id" title="var">sf_forall</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>, <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) -&gt; <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">add_hyp</span> := (<span class="id" title="keyword">fun</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span> =&gt; <span class="id" title="var">add_item</span> (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">new_hyp</span> := (<span class="id" title="keyword">fun</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span> =&gt; <span class="id" title="var">new_item</span> (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">base_hyp</span> := (<span class="id" title="keyword">fun</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span> =&gt; <span class="id" title="var">base_item</span> (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">definitions_of_propositional_connectors</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span>:= (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">impl</span>:= (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">wr</span>:= (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_neg</span> (<span class="id" title="var">a</span>:<span class="id" title="var">F</span>):= <span class="id" title="var">impl</span> <span class="id" title="var">a</span> <span class="id" title="var">wr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_or</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>):= <span class="id" title="var">impl</span> (<span class="id" title="var">sf_neg</span> <span class="id" title="var">a</span>) <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_and</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>):= <span class="id" title="var">sf_neg</span> (<span class="id" title="var">impl</span> <span class="id" title="var">a</span> (<span class="id" title="var">sf_neg</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_equiv</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>):= <span class="id" title="var">sf_and</span> (<span class="id" title="var">impl</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">impl</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">definitions_of_propositional_connectors</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">definitions_of_quantifiers_related_formulas</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">bel</span> := (<span class="id" title="var">sf_belongs</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_equal</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">C</span>):<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_and</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(        <span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">Some</span> <span class="id" title="var">x</span>) (<span class="id" title="var">None</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">Some</span> <span class="id" title="var">y</span>) (<span class="id" title="var">None</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(        <span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> <span class="id" title="var">None</span> (<span class="id" title="var">Some</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> <span class="id" title="var">None</span> (<span class="id" title="var">Some</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+the definition of equality below will be used with extensionality we'll develop 
+        further
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_ext_equal</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">C</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">None</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">None</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_exists</span> (<span class="id" title="var">f</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_neg</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">f</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_is_the_set_of</span> (<span class="id" title="var">x</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">A</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)                           <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">None</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">definitions_of_quantifiers_related_formulas</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">definition_of_change_of_variables_maps</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">change_of_context</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span>:<span class="id" title="keyword">Type</span>)(<span class="id" title="var">chvar</span>:<span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)(<span class="id" title="var">u</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">A</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">u</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Set_Formula</span> <span class="id" title="var">B</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">u</span> <span class="id" title="tactic">in</span> (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">T</span>) <span class="id" title="keyword">return</span> ((<span class="id" title="var">T</span> -&gt; <span class="id" title="var">B</span>) -&gt; <span class="id" title="var">Set_Formula</span> <span class="id" title="var">B</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sf_belongs</span> <span class="id" title="var">C</span> <span class="id" title="var">c</span> <span class="id" title="var">c0</span> =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">B</span> =&gt; <span class="id" title="var">sf_belongs</span> <span class="id" title="var">B</span> (<span class="id" title="var">f</span> <span class="id" title="var">c</span>) (<span class="id" title="var">f</span> <span class="id" title="var">c0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span> =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">B</span> =&gt; <span class="id" title="var">sf_wrong</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">u1</span> <span class="id" title="var">u2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">B</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_implies</span> <span class="id" title="var">B</span> (<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">u1</span>) (<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">u2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">u0</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">B</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_forall</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">change_of_context</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">option</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">extend_map_to_bound_variables</span> <span class="id" title="var">C</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>) <span class="id" title="var">u0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> <span class="id" title="var">chvar</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">constant_formula_embedding</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">u</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>):(<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span>) <span class="id" title="var">u</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">specify</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">t</span>:<span class="id" title="var">C</span>): <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) -&gt; <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">C</span> (<span class="id" title="var">option_rect</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span>:<span class="id" title="var">option</span> <span class="id" title="var">C</span> =&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span> =&gt; <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">t</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">predicate_embedding</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>): (<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) -&gt; (<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>))):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option_rect</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span>:<span class="id" title="var">option</span> <span class="id" title="var">C</span> =&gt; <span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span> =&gt; <span class="id" title="var">Some</span> (<span class="id" title="var">Some</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">None</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">compatibility_theorems_about_specify_and_constant_embedding</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">coc_pointwise_equality</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span> <span class="id" title="var">g</span>: <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">A</span>, <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">g</span> <span class="id" title="var">x</span>) -&gt; <span class="id" title="keyword">forall</span> (<span class="id" title="var">u</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">A</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span> = <span class="id" title="var">change_of_context</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">g</span> <span class="id" title="var">u</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">coc_composition_equality</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span>: <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">u</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">A</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">v</span>:<span class="id" title="var">A</span>) =&gt; <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">v</span>)) <span class="id" title="var">u</span> =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span> (<span class="id" title="var">change_of_context</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">coc_identity_equality</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">u</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">A</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">v</span>:<span class="id" title="var">A</span>) =&gt; <span class="id" title="var">v</span>) <span class="id" title="var">u</span> = <span class="id" title="var">u</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">compatibility_theorems_about_specify_and_constant_embedding</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">definition_of_change_of_variables_maps</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">further_language_definitions</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span>:= (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">P</span>:= (<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) </div>
+
+<div class="doc">
+"predicate", or property
+</div>
+<div class="code">
+.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">forall_x</span> := (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">forall_y</span> := (<span class="id" title="var">sf_forall</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">C'</span> := (<span class="id" title="var">option</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">C''</span> := (<span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">X</span>:= (<span class="id" title="var">None</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">x</span>:= (<span class="id" title="var">Some</span> (<span class="id" title="var">None</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">y</span>:= (<span class="id" title="var">None</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_is_a_set</span> (<span class="id" title="var">A</span>:<span class="id" title="var">P</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_is_the_set_of</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">None</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">predicate_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">var_embed2</span> (<span class="id" title="var">a</span>:<span class="id" title="var">C</span>):<span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>):= <span class="id" title="var">Some</span> (<span class="id" title="var">Some</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">map_specify</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">M</span> <span class="id" title="var">N</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">e</span>: <span class="id" title="var">M</span> -&gt; <span class="id" title="var">N</span>) (<span class="id" title="var">s</span>:<span class="id" title="var">N</span>): <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">M</span>) -&gt; <span class="id" title="var">Set_Formula</span> <span class="id" title="var">N</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> (<span class="id" title="var">option</span> <span class="id" title="var">M</span>) <span class="id" title="var">N</span> (<span class="id" title="var">option_rect</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span>:<span class="id" title="var">option</span> <span class="id" title="var">M</span> =&gt; <span class="id" title="var">N</span>) <span class="id" title="var">e</span> <span class="id" title="var">s</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">local_map_specify</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">M</span> <span class="id" title="var">N</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">e</span>: <span class="id" title="var">M</span> -&gt; <span class="id" title="var">N</span>) (<span class="id" title="var">s</span>:<span class="id" title="var">N</span>) =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> (<span class="id" title="var">option</span> <span class="id" title="var">M</span>) <span class="id" title="var">N</span> (<span class="id" title="var">option_rect</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span>:<span class="id" title="var">option</span> <span class="id" title="var">M</span> =&gt; <span class="id" title="var">N</span>) <span class="id" title="var">e</span> <span class="id" title="var">s</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_unique</span> (<span class="id" title="var">A</span>:<span class="id" title="var">P</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">forall_x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">forall_y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C''</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">local_map_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">C''</span> <span class="id" title="var">var_embed2</span> <span class="id" title="var">x</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C''</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">local_map_specify</span> <span class="id" title="var">C</span> <span class="id" title="var">C''</span> <span class="id" title="var">var_embed2</span> <span class="id" title="var">y</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_equal</span> <span class="id" title="var">C''</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_exists_unique</span> (<span class="id" title="var">A</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_and</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">A</span>) (<span class="id" title="var">sf_unique</span> <span class="id" title="var">A</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">further_language_definitions</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Hilbert_systems_and_natural_deduction_for_Set_Formulas</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">KF</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>) =&gt; <span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">SF</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>) =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">ABSF</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>) =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">special_case_F</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>: <span class="id" title="var">C</span>) =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">forall_const_F</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">b</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>) =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">forall_mp_F</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_implies</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">logical_axiom</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>, <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">K_ax</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>), <span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> (<span class="id" title="var">KF</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">S_ax</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>), <span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> (<span class="id" title="var">SF</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">ABS_ax</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>), <span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> (<span class="id" title="var">ABSF</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">special_case_ax</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> (<span class="id" title="var">special_case_F</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">forall_const_ax</span>:  <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">b</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> (<span class="id" title="var">forall_const_F</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">forall_mp_ax</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> (<span class="id" title="var">forall_mp_F</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">universal_closure</span>:  <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">logical_axiom</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">f</span> -&gt; <span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Hilbert_systems_definition</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span> := (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;a § b" := (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">hs_proof</span>: <span class="id" title="var">F</span> -&gt; <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">hs_theory_axiom</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">F</span>, <span class="id" title="var">T</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">hs_logical_axiom</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>:<span class="id" title="var">F</span>, <span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">hs_implies_elim</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) -&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_identity</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">wr</span> := (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_absurd</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> ((<span class="id" title="var">a</span> § <span class="id" title="var">wr</span>) § <span class="id" title="var">wr</span>) -&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_all_elim</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>) -&gt; <span class="id" title="var">hs_proof</span> (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Hilbert_systems_definition</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Hilbert_systems_deduction_properties</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">h</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span> := (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;a § b" := (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_implies_intro</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">u</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> (<span class="id" title="var">add_hyp</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">h</span>) <span class="id" title="var">u</span> -&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">h</span> § <span class="id" title="var">u</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_weakening</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">U</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">w</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>, <span class="id" title="var">T</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">U</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">g</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">U</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Hilbert_systems_deduction_properties</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Hilbert_systems_generalization_properties</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">h</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span> := (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;a § b" := (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">constant_theory_embedding</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) -&gt; <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ct_embed</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">F</span>, <span class="id" title="var">T</span> <span class="id" title="var">x</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">constant_theory_embedding</span> (<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_forall_intro</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">constant_theory_embedding</span>) <span class="id" title="var">a</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Hilbert_systems_generalization_properties</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We provide a natural deduction system for the language we have defined. Although it will
+      be seldom used in the text, the idea is to show what we do is familiar to the reader.
+     We show below that the Hilbert system we have defined proves the same theorems as 
+     this natural deduction system.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">nd_proof</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>, ((<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>) -&gt; <span class="id" title="keyword">Type</span>) -&gt; <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">nd_ax</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)(<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">nd_impl_e</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)(<span class="id" title="var">f</span> <span class="id" title="var">g</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>) -&gt; <span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">nd_impl_i</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)(<span class="id" title="var">f</span> <span class="id" title="var">g</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> (<span class="id" title="var">add_hyp</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>) <span class="id" title="var">g</span> -&gt; <span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">nd_absurd</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)(<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">nd_all_e</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) -&gt; <span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">nd_all_i</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>) <span class="id" title="var">f</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">nd_and_hs_are_equivalent</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">nd_forall_mp</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>)(<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)(<span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">forall_mp_F</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">nd_to_hs</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">logical_axiom_to_nd</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="keyword">forall</span> (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>), <span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_to_nd</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>)(<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">u</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">u</span> -&gt; <span class="id" title="var">nd_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">u</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">nd_and_hs_are_equivalent</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">morphisms_of_theories_and_proofs</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">theory_context_change</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span> <span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>): (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="keyword">Type</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="id" title="var">tcc_embed</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">u</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> <span class="id" title="var">u</span> -&gt; <span class="id" title="var">theory_context_change</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">f</span> <span class="id" title="var">T</span> (<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">logical_axiom_context_change</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) (<span class="id" title="var">u</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">logical_axiom</span> <span class="id" title="var">C</span> <span class="id" title="var">u</span> -&gt; <span class="id" title="var">logical_axiom</span> <span class="id" title="var">D</span> (<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_proof_context_change</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) (<span class="id" title="var">u</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">u</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">D</span> (<span class="id" title="var">theory_context_change</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">f</span> <span class="id" title="var">T</span>) (<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ct_embed_proof</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">u</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">u</span> -&gt; <span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)(<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">u</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">morphisms_of_theories_and_proofs</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">some_propositional_inference_rules</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+These may be formulated with natural deduction, but we'll stick to Hilbert systems
+        because they're easier to handle for some of our purposes
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span>:= (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;U |- m" := (<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">U</span> <span class="id" title="var">m</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 61).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;x § y" := (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">wr</span> := (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_weakening_hypothesis</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">U</span>: <span class="id" title="var">F</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">h</span> <span class="id" title="var">x</span>:<span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">U</span> |- <span class="id" title="var">x</span> -&gt; (<span class="id" title="var">add_hyp</span> <span class="id" title="var">C</span> <span class="id" title="var">U</span> <span class="id" title="var">h</span>) |- <span class="id" title="var">x</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">combinator_like_tautologies</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_b_syllogism_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- (<span class="id" title="var">y</span> § <span class="id" title="var">z</span>) § (<span class="id" title="var">x</span> § <span class="id" title="var">y</span>) § (<span class="id" title="var">x</span> § <span class="id" title="var">z</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_q_syllogism_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- (<span class="id" title="var">x</span> § <span class="id" title="var">y</span>) § (<span class="id" title="var">y</span> § <span class="id" title="var">z</span>) § (<span class="id" title="var">x</span> § <span class="id" title="var">z</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">BF</span> := (<span class="id" title="keyword">fun</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>:<span class="id" title="var">F</span>) =&gt; (<span class="id" title="var">y</span> § <span class="id" title="var">z</span>) § (<span class="id" title="var">x</span> § <span class="id" title="var">y</span>) § <span class="id" title="var">x</span> § <span class="id" title="var">z</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_permutation_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- (<span class="id" title="var">x</span> § <span class="id" title="var">y</span> § <span class="id" title="var">z</span>) § (<span class="id" title="var">y</span> § <span class="id" title="var">x</span> § <span class="id" title="var">z</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">combinator_like_tautologies</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_double_negation_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">x</span> § (<span class="id" title="var">x</span> § <span class="id" title="var">wr</span>) § <span class="id" title="var">wr</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_double_negation</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">x</span> -&gt; <span class="id" title="var">T</span>|- (<span class="id" title="var">x</span> § <span class="id" title="var">wr</span>) § <span class="id" title="var">wr</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_contraposition_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- (<span class="id" title="var">a</span> § <span class="id" title="var">b</span>) § (<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>) § (<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_contraposition</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- (<span class="id" title="var">a</span> § <span class="id" title="var">b</span>) -&gt; <span class="id" title="var">T</span> |- (<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>) § (<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_syllogism</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>:<span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">x</span> § <span class="id" title="var">y</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">y</span> § <span class="id" title="var">z</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">x</span> § <span class="id" title="var">z</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_absurd2_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- ((<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span>) § (<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>)) § <span class="id" title="var">x</span> § <span class="id" title="var">y</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_absurd2</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- ((<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span>) § (<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>)) -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">x</span> § <span class="id" title="var">y</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_and_intro_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span> § <span class="id" title="var">b</span> § (<span class="id" title="var">sf_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_and_intro</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">sf_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_explosion_formula</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">U</span>:<span class="id" title="var">F</span> -&gt; <span class="id" title="keyword">Type</span>)(<span class="id" title="var">x</span>:<span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">U</span> |- <span class="id" title="var">wr</span> § <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_explosion</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">U</span>:<span class="id" title="var">F</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">U</span> |- <span class="id" title="var">wr</span> -&gt; <span class="id" title="var">U</span> |- <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_and_elim_left_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- (<span class="id" title="var">sf_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) § <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_and_elim_right_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- (<span class="id" title="var">sf_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> § <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_and_elim_left</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_and_elim_right</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_and</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_or_intro_l_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span> § (<span class="id" title="var">sf_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_or_intro_r_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- (<span class="id" title="var">b</span> § <span class="id" title="var">sf_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_or_intro_l</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">sf_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_or_intro_r</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">sf_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_peirce</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- ((<span class="id" title="var">a</span> § <span class="id" title="var">b</span>) § <span class="id" title="var">a</span>) § <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_absurd3</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add_hyp</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_neg</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span>)) |- <span class="id" title="var">x</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_or_elim_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- (<span class="id" title="var">a</span> § <span class="id" title="var">x</span>) § (<span class="id" title="var">b</span> § <span class="id" title="var">x</span>) § (<span class="id" title="var">sf_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) § <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_or_elim</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add_hyp</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">a</span>) |- <span class="id" title="var">x</span> -&gt; (<span class="id" title="var">add_hyp</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">b</span>) |- <span class="id" title="var">x</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">sf_or</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equiv_symmetry_formula</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equiv_reflexivity</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> :<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equiv_symmetry</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span>|- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equiv_transitivity</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span>|- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> -&gt;  <span class="id" title="var">T</span>|- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equiv_intro</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">add_hyp</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">a</span> |- <span class="id" title="var">b</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">add_hyp</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> <span class="id" title="var">b</span> |- <span class="id" title="var">a</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_elim_left_right</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">a</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_elim_right_left</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">F</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">some_propositional_inference_rules</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equiv_transitivity_formula</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>) (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">some_quantifier_based_inference_rules</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We now introduce some quantification rules
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span>:= (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;U |- m" := (<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">U</span> <span class="id" title="var">m</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 61).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;x § y" := (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">wr</span> := (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_forall_intro2</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span>:<span class="id" title="var">F</span>) (<span class="id" title="var">b</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>) <span class="id" title="var">b</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span> § (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_exists_elim2</span>: <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span>:<span class="id" title="var">F</span>) (<span class="id" title="var">b</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">b</span> (<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- (<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>) § <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_exists_elim</span>: <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span>:<span class="id" title="var">F</span>) (<span class="id" title="var">b</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add_hyp</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>) <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_exists_intro_formula</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">b</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">b</span>) § (<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_exists_intro</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">b</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">t</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">t</span> <span class="id" title="var">b</span>) -&gt; <span class="id" title="var">T</span> |- (<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_double_special_case</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">C</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>))),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_forall</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">f</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> (<span class="id" title="var">specify</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">Some</span> <span class="id" title="var">y</span>) <span class="id" title="var">f</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_reverted_forall_intro</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">f</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">forall_with_implies_and_equiv</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">P</span>:= (<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_subpredicate</span> (<span class="id" title="var">f</span> <span class="id" title="var">g</span>:<span class="id" title="var">P</span>):= <span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_implies</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_eq_predicate</span> (<span class="id" title="var">f</span> <span class="id" title="var">g</span>:<span class="id" title="var">P</span>):= <span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_subpredicate_reflexivity</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">f</span>:<span class="id" title="var">P</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_subpredicate</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_subpredicate_transitivity_formula</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>:<span class="id" title="var">P</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_subpredicate</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_subpredicate</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_subpredicate</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_subpredicate_transitivity</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>:<span class="id" title="var">P</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_subpredicate</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_subpredicate</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_subpredicate</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_eq_predicate_reflexivity</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">f</span>:<span class="id" title="var">P</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_eq_predicate_symmetry_formula</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">P</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_eq_predicate_symmetry</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>:<span class="id" title="var">P</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">T</span> |- <span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_eq_predicate_transitivity_formula</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>:<span class="id" title="var">P</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_eq_predicate_transitivity</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>:<span class="id" title="var">P</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span>|- <span class="id" title="var">sf_eq_predicate</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">forall_with_implies_and_equiv</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">some_quantifier_based_inference_rules</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">witnesses</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">the_general_case</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">u</span>: <span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">pex</span>: <span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">u</span>).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span>:= (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;U |- m" := (<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">U</span> <span class="id" title="var">m</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 61).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;x § y" := (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">wr</span> := (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_generic_witness_property</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">g</span>:<span class="id" title="var">F</span>) (<span class="id" title="var">a</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_existential_witness_property</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">g</span>:<span class="id" title="var">F</span>) (<span class="id" title="var">a</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)                         <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">the_general_case</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">when_the_context_is_not_empty</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">l</span>: <span class="id" title="var">C</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">F</span>:= (<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;U |- m" := (<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">U</span> <span class="id" title="var">m</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 61).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;x § y" := (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 51).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">wr</span> := (<span class="id" title="var">sf_wrong</span> <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">constant_true_class</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_neg</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) (<span class="id" title="var">sf_wrong</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">non_empty_universe</span>: <span class="id" title="var">T</span> |- <span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">constant_true_class</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_generic_witness_property_with_non_empty_context</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">g</span>:<span class="id" title="var">F</span>) (<span class="id" title="var">a</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_existential_witness_property_with_non_empty_context</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">g</span>:<span class="id" title="var">F</span>) (<span class="id" title="var">a</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_theory_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)                         <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_exists</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">constant_formula_embedding</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> |- <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">when_the_context_is_not_empty</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">witnesses</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Hilbert_systems_and_natural_deduction_for_Set_Formulas</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Equality_properties_and_extensionality</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Definition_of_extensionality</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">bel</span> := (<span class="id" title="keyword">fun</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span>:(<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) =&gt; <span class="id" title="var">sf_belongs</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+two sets are said to be (extensionally) equal whenever they have the same 
+      elements 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_Leibniz_implication</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">C</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">Some</span> <span class="id" title="var">x</span>) (<span class="id" title="var">None</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">Some</span> <span class="id" title="var">y</span>) (<span class="id" title="var">None</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sf_Leibniz_equal</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">C</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">Some</span> <span class="id" title="var">x</span>) (<span class="id" title="var">None</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bel</span> (<span class="id" title="var">Some</span> <span class="id" title="var">y</span>) (<span class="id" title="var">None</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Definition_of_extensionality</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equiv_implies_formula</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>)))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equiv_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>) -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">sf_implies</span> <span class="id" title="var">C</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_forall_equiv_formula</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)(<span class="id" title="var">f</span> <span class="id" title="var">g</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span> <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">f</span> <span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_equiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_forall_equiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>)(<span class="id" title="var">f</span> <span class="id" title="var">g</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_equiv</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>) <span class="id" title="var">f</span> <span class="id" title="var">g</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">C</span> (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>) (<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equality_reflexivity</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">C</span>):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">hs_equality_general_elimination</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span>: <span class="id" title="var">Set_Formula</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">envl</span> <span class="id" title="var">envr</span>: <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">eqenv</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">C</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">D</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_equal</span> <span class="id" title="var">D</span> (<span class="id" title="var">envl</span> <span class="id" title="var">x</span>) (<span class="id" title="var">envr</span> <span class="id" title="var">x</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="keyword">struct</span> <span class="id" title="var">f</span>}:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">D</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_equiv</span> <span class="id" title="var">D</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">envl</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">envr</span> <span class="id" title="var">f</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_equality_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Below is the extensionality axiom (but we call it "extensionality property" 
+      and save the expression "extensionality axiom" for later).
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">extensionality_property</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>):=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sf_forall</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_forall</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_implies</span> (<span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_ext_equal</span> (<span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Some</span> <span class="id" title="var">None</span>)         <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">None</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sf_Leibniz_implication</span> (<span class="id" title="var">option</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Some</span> <span class="id" title="var">None</span>)         <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">None</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Equality_properties_and_extensionality</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Equality_according_to_Leibniz</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ext_ax_context_change</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> <span class="id" title="var">D</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>: <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">change_of_context</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">f</span> (<span class="id" title="var">extensionality_property</span> <span class="id" title="var">C</span>) = <span class="id" title="var">extensionality_property</span> <span class="id" title="var">D</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">var_eq_test</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span>: <span class="id" title="var">option</span> <span class="id" title="var">C</span>): <span class="id" title="var">sum</span> (<span class="id" title="var">None</span> = <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="var">None</span> = <span class="id" title="var">x</span>) -&gt; <span class="id" title="var">Empty_set</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">equality_as_an_equivalence_relationship</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+the properties proven in this section don't rely on the extensionality axiom
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_extensional_equality_reflexivity</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_ext_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_extensional_equality_symmetry</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_ext_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_ext_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_extensional_equality_transitivity</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_ext_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_ext_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_ext_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">equality_as_an_equivalence_relationship</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hs_set_extensional_equality_elim</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">T</span>:<span class="id" title="var">Set_Formula</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span>:<span class="id" title="var">Set_Formula</span> (<span class="id" title="var">option</span> <span class="id" title="var">C</span>)) (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">extensionality_property</span> <span class="id" title="var">C</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">sf_ext_equal</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">x</span> <span class="id" title="var">f</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hs_proof</span> <span class="id" title="var">C</span> <span class="id" title="var">T</span> (<span class="id" title="var">specify</span> <span class="id" title="var">C</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Equality_according_to_Leibniz</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">basic_definitions</span>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
