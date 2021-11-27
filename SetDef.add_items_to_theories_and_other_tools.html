@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>SetDef.add_items_to_theories_and_other_tools</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library SetDef.add_items_to_theories_and_other_tools</h1>
+
+<div class="code">
+<span class="id" title="keyword">Section</span> <a name="add_hypotheses_to_general_theories"><span class="id" title="section">add_hypotheses_to_general_theories</span></a>.<br/>
+</div>
+
+<div class="doc">
+This basic device will be used to add an hypothesis to a theory.
+    In our formalism, a theory is a map from a certain type
+    of sentences, to Type.
+
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <a name="add_hypotheses_to_general_theories.P"><span class="id" title="variable">P</span></a>:<span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <a name="add_hypotheses_to_general_theories.T"><span class="id" title="variable">T</span></a>: <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_hypotheses_to_general_theories.P"><span class="id" title="variable">P</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <a name="add_hypotheses_to_general_theories.h"><span class="id" title="variable">h</span></a>:<a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_hypotheses_to_general_theories.P"><span class="id" title="variable">P</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <a name="add_item"><span class="id" title="inductive">add_item</span></a>: <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_hypotheses_to_general_theories.P"><span class="id" title="variable">P</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Type</span>:=<br/>
+&nbsp;&nbsp;|<a name="new_item"><span class="id" title="constructor">new_item</span></a>: <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_item"><span class="id" title="inductive">add_item</span></a> <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_hypotheses_to_general_theories.h"><span class="id" title="variable">h</span></a><br/>
+&nbsp;&nbsp;|<a name="base_item"><span class="id" title="constructor">base_item</span></a>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_hypotheses_to_general_theories.P"><span class="id" title="variable">P</span></a>, <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_hypotheses_to_general_theories.T"><span class="id" title="variable">T</span></a> <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#x"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#1c93e43e07fbeaeb6a625cb6614beb5d"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_item"><span class="id" title="inductive">add_item</span></a> <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#x"><span class="id" title="variable">x</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#add_hypotheses_to_general_theories"><span class="id" title="section">add_hypotheses_to_general_theories</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a name="nat_equality_test"><span class="id" title="section">nat_equality_test</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is an equality test between natural integers 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <a name="nat_eqdec"><span class="id" title="definition">nat_eqdec</span></a> (<span class="id" title="var">p</span> <span class="id" title="var">q</span>:<a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">p</span>}:<a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Specif.html#sumbool"><span class="id" title="inductive">sumbool</span></a> (<a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#p"><span class="id" title="variable">p</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#q"><span class="id" title="variable">q</span></a>) (<a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#p"><span class="id" title="variable">p</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#a0a5068f83a704fcfbda8cd473a6cfea"><span class="id" title="notation">&lt;&gt;</span></a> <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#q"><span class="id" title="variable">q</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="SetDef.add_items_to_theories_and_other_tools.html#nat_equality_test"><span class="id" title="section">nat_equality_test</span></a>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

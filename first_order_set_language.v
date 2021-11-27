@@ -19,7 +19,7 @@ but we didn't know the latter at the time the majority of this program was writt
 
 (** In order to implement first order formulas, we need a mechanism to manage bound variables.
     We use nested abstract syntax, as in https://math.unice.fr/~ah/div/fsubwf.pdf .
-    New variables are added to he cirent context with the option operator.  
+    New variables are added to the current context with the option operator.  
 *)
   
   Inductive Set_Formula: Type -> Type:=

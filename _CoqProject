@@ -1,4 +1,4 @@
--R ./ SetDef 
+-Q ./ SetDef 
 add_items_to_theories_and_other_tools.v
 elementary_semantics_for_set_language.v
 first_axiom_system_for_definition_operator.v
