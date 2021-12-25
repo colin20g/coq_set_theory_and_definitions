@@ -8,7 +8,7 @@ Library usage:
 In a .v file: include the line "Require Import Set_and_Definitions." at the beginning of your file.
 
 With coqtop (in a linux terminal):
-From the folder where the library has been build, launch coqtop with the command "coqtop -Q . Setdef -l Sets_and_Definitions.v".
+From the folder where the library has been build, launch coqtop with the command "coqtop -Q . SetDef -l Sets_and_Definitions.v".
 Alternatively, you may launch coqtop first, then from here enter the commands:<<
 
 Add LoadPath "./" as SetDef.
