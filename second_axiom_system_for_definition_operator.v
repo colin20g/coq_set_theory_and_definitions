@@ -1088,7 +1088,7 @@ Section main.
      
      Definition d_theory_embed_atv:= d_theory_context_change C T add_two_vars atv_base_var. 
 
-     (** We introduce shorter notations in order (hopfully) to make the statement of the 
+     (** We introduce shorter notations in order (hopefully) to make the statement of the 
       result more clear *)
      
      Notation A:= add_two_vars.
@@ -1845,7 +1845,7 @@ Section main.
       assumption.
     Defined.
 
-    Definition second_d_prop_language_conservativity_property:
+    Definition second_d_prop_elimination_of_definitions:
       forall (C : Type) (p : DP C) (k : C) (T : DP C -> Type),
         second_d_proof
           C k T
@@ -1853,7 +1853,7 @@ Section main.
     Proof.
       intros.
       apply fd_to_sd.
-      apply first_d_prop_language_conservativity_property.
+      apply first_d_prop_elimination_of_definitions.
     Defined.
 
     Fixpoint fd_conservatively_equal_equal (C:Type) (k:C) (T:DP C -> Type)
@@ -1867,7 +1867,7 @@ Section main.
       assumption.
     Defined.
     
-    Definition second_d_term_language_conservativity_property:
+    Definition second_d_term_elimination_of_definitions:
       forall (C : Type) (t : DT C) (k : C) (T : DP C -> Type),
         second_d_proof
           C k T
@@ -1876,7 +1876,7 @@ Section main.
       intros.
       apply fd_to_sd.
       apply fd_conservatively_equal_equal.
-      apply first_d_term_language_conservativity_property.
+      apply first_d_term_elimination_of_definitions.
     Defined.
       
   End conservativity_theorems.

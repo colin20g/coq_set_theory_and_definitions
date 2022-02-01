@@ -19,6 +19,7 @@
 <h1 class="libtitle">Library SetDef.set_language_with_definition_operator</h1>
 
 <div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="SetDef.first_order_set_language.html#"><span class="id" title="library">SetDef.first_order_set_language</span></a>.<br/>
 
 <br/>
 <span class="id" title="keyword">Section</span> <a name="main"><span class="id" title="section">main</span></a>.<br/>
@@ -639,6 +640,14 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="SetDef.set_language_with_definition_operator.html#sf_exun_belongs_letter_term"><span class="id" title="definition">sf_exun_belongs_letter_term</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#x"><span class="id" title="variable">x</span></a> (<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_exun_translation_term"><span class="id" title="definition">d_exun_translation_term</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#k"><span class="id" title="variable">k</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#t"><span class="id" title="variable">t</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ri</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_to_sf_exun_implies_eq"><span class="id" title="definition">d_to_sf_exun_implies_eq</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ra</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_to_sf_exun_and_eq"><span class="id" title="definition">d_to_sf_exun_and_eq</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">rn</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_to_sf_exun_neg_eq"><span class="id" title="definition">d_to_sf_exun_neg_eq</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fe</span> := <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fe2</span> := <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">re</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_to_sf_exun_exists_eq"><span class="id" title="definition">d_to_sf_exun_exists_eq</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">reu</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_to_sf_exun_exists_unique_eq"><span class="id" title="definition">d_to_sf_exun_exists_unique_eq</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">rf</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_to_sf_exun_forall_eq"><span class="id" title="definition">d_to_sf_exun_forall_eq</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_to_sf_exun_belongs_prop_term_eq"><span class="id" title="definition">d_to_sf_exun_belongs_prop_term_eq</span></a>:<br/>
@@ -693,6 +702,8 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <a name="main.exist_unique_translation_tools.d_exun_formulas_in_change_of_contexts"><span class="id" title="section">d_exun_formulas_in_change_of_contexts</span></a>.<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fe</span> := <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fe2</span> := <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_implies_coc_eq"><span class="id" title="definition">d_implies_coc_eq</span></a>:<br/>
@@ -703,6 +714,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_prop_change_of_context"><span class="id" title="definition">d_prop_change_of_context</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ei</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_implies_coc_eq"><span class="id" title="definition">d_implies_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_and_coc_eq"><span class="id" title="definition">d_and_coc_eq</span></a>:<br/>
@@ -713,6 +725,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_prop_change_of_context"><span class="id" title="definition">d_prop_change_of_context</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ea</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_and_coc_eq"><span class="id" title="definition">d_and_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_equiv_coc_eq"><span class="id" title="definition">d_equiv_coc_eq</span></a>:<br/>
@@ -723,6 +736,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_prop_change_of_context"><span class="id" title="definition">d_prop_change_of_context</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ee</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_equiv_coc_eq"><span class="id" title="definition">d_equiv_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_neg_coc_eq"><span class="id" title="definition">d_neg_coc_eq</span></a>:<br/>
@@ -732,6 +746,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_neg"><span class="id" title="definition">d_neg</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> (<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_prop_change_of_context"><span class="id" title="definition">d_prop_change_of_context</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#a"><span class="id" title="variable">a</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">en</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_neg_coc_eq"><span class="id" title="definition">d_neg_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_forall_coc_eq"><span class="id" title="definition">d_forall_coc_eq</span></a>:<br/>
@@ -743,6 +758,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.first_order_set_language.html#extend_map_to_bound_variables"><span class="id" title="definition">extend_map_to_bound_variables</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>)).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ef</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_forall_coc_eq"><span class="id" title="definition">d_forall_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_exists_coc_eq"><span class="id" title="definition">d_exists_coc_eq</span></a>:<br/>
@@ -754,6 +770,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.first_order_set_language.html#extend_map_to_bound_variables"><span class="id" title="definition">extend_map_to_bound_variables</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>)).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eex</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_exists_coc_eq"><span class="id" title="definition">d_exists_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_belongs_coc_eq"><span class="id" title="definition">d_belongs_coc_eq</span></a>:<br/>
@@ -764,6 +781,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_term_change_of_context"><span class="id" title="definition">d_term_change_of_context</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#t"><span class="id" title="variable">t</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eb</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_belongs_coc_eq"><span class="id" title="definition">d_belongs_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_equal_coc_eq"><span class="id" title="definition">d_equal_coc_eq</span></a>:<br/>
@@ -774,6 +792,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_term_change_of_context"><span class="id" title="definition">d_term_change_of_context</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#t"><span class="id" title="variable">t</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eeq</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_equal_coc_eq"><span class="id" title="definition">d_equal_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_unique_coc_eq"><span class="id" title="definition">d_unique_coc_eq</span></a>:<br/>
@@ -785,6 +804,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.first_order_set_language.html#extend_map_to_bound_variables"><span class="id" title="definition">extend_map_to_bound_variables</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>)).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eu</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_unique_coc_eq"><span class="id" title="definition">d_unique_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_exists_unique_coc_eq"><span class="id" title="definition">d_exists_unique_coc_eq</span></a>:        <br/>
@@ -796,6 +816,8 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.first_order_set_language.html#extend_map_to_bound_variables"><span class="id" title="definition">extend_map_to_bound_variables</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>)).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eeu</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_exists_unique_coc_eq"><span class="id" title="definition">d_exists_unique_coc_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eeua</span>:= <span class="id" title="tactic">apply</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_exists_unique_coc_eq"><span class="id" title="definition">d_exists_unique_coc_eq</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_exun_belongs_letter_prop_coc_eq"><span class="id" title="definition">d_exun_belongs_letter_prop_coc_eq</span></a>:        <br/>
@@ -861,6 +883,8 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <a name="main.exist_unique_translation_tools.d_exun_formulas_in_substitutions"><span class="id" title="section">d_exun_formulas_in_substitutions</span></a>.<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fe</span> := <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fe2</span> := <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_implies_subst_eq"><span class="id" title="definition">d_implies_subst_eq</span></a>:<br/>
@@ -871,6 +895,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_prop_substitution"><span class="id" title="definition">d_prop_substitution</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ei</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_implies_subst_eq"><span class="id" title="definition">d_implies_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_and_subst_eq"><span class="id" title="definition">d_and_subst_eq</span></a>:<br/>
@@ -881,6 +906,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_prop_substitution"><span class="id" title="definition">d_prop_substitution</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ea</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_and_subst_eq"><span class="id" title="definition">d_and_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_equiv_subst_eq"><span class="id" title="definition">d_equiv_subst_eq</span></a>:<br/>
@@ -891,6 +917,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_prop_substitution"><span class="id" title="definition">d_prop_substitution</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ee</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_equiv_subst_eq"><span class="id" title="definition">d_equiv_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_neg_subst_eq"><span class="id" title="definition">d_neg_subst_eq</span></a>:<br/>
@@ -900,6 +927,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_neg"><span class="id" title="definition">d_neg</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> (<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_prop_substitution"><span class="id" title="definition">d_prop_substitution</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#a"><span class="id" title="variable">a</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">en</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_neg_subst_eq"><span class="id" title="definition">d_neg_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_forall_subst_eq"><span class="id" title="definition">d_forall_subst_eq</span></a>:<br/>
@@ -916,6 +944,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ef</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_forall_subst_eq"><span class="id" title="definition">d_forall_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_exists_subst_eq"><span class="id" title="definition">d_exists_subst_eq</span></a>:<br/>
@@ -932,6 +961,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eex</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_exists_subst_eq"><span class="id" title="definition">d_exists_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_belongs_subst_eq"><span class="id" title="definition">d_belongs_subst_eq</span></a>:<br/>
@@ -942,6 +972,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_term_substitution"><span class="id" title="definition">d_term_substitution</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#t"><span class="id" title="variable">t</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eb</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_belongs_subst_eq"><span class="id" title="definition">d_belongs_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_equal_subst_eq"><span class="id" title="definition">d_equal_subst_eq</span></a>:<br/>
@@ -952,6 +983,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_term_substitution"><span class="id" title="definition">d_term_substitution</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#t"><span class="id" title="variable">t</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#D"><span class="id" title="variable">D</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#env"><span class="id" title="variable">env</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eeq</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_equal_subst_eq"><span class="id" title="definition">d_equal_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_unique_subst_eq"><span class="id" title="definition">d_unique_subst_eq</span></a>:<br/>
@@ -968,6 +1000,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eu</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_unique_subst_eq"><span class="id" title="definition">d_unique_subst_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_exists_unique_subst_eq"><span class="id" title="definition">d_exists_unique_subst_eq</span></a>:        <br/>
@@ -990,6 +1023,8 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <a name="main.exist_unique_translation_tools.d_exun_formulas_in_sf_to_d"><span class="id" title="section">d_exun_formulas_in_sf_to_d</span></a>.<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fe</span> := <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">fe2</span> := <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_implies_sftd_eq"><span class="id" title="definition">d_implies_sftd_eq</span></a>:<br/>
@@ -1000,6 +1035,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#sf_to_d_translation"><span class="id" title="definition">sf_to_d_translation</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ei</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_implies_sftd_eq"><span class="id" title="definition">d_implies_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_and_sftd_eq"><span class="id" title="definition">d_and_sftd_eq</span></a>:<br/>
@@ -1010,6 +1046,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#sf_to_d_translation"><span class="id" title="definition">sf_to_d_translation</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ea</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_and_sftd_eq"><span class="id" title="definition">d_and_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_equiv_sftd_eq"><span class="id" title="definition">d_equiv_sftd_eq</span></a>:<br/>
@@ -1020,6 +1057,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#sf_to_d_translation"><span class="id" title="definition">sf_to_d_translation</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#b"><span class="id" title="variable">b</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ee</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_equiv_sftd_eq"><span class="id" title="definition">d_equiv_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_neg_sftd_eq"><span class="id" title="definition">d_neg_sftd_eq</span></a>:<br/>
@@ -1029,6 +1067,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_neg"><span class="id" title="definition">d_neg</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> (<a class="idref" href="SetDef.set_language_with_definition_operator.html#sf_to_d_translation"><span class="id" title="definition">sf_to_d_translation</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#a"><span class="id" title="variable">a</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">en</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_neg_sftd_eq"><span class="id" title="definition">d_neg_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_forall_sftd_eq"><span class="id" title="definition">d_forall_sftd_eq</span></a>:<br/>
@@ -1039,6 +1078,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a>) <a class="idref" href="SetDef.set_language_with_definition_operator.html#p"><span class="id" title="variable">p</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ef</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_forall_sftd_eq"><span class="id" title="definition">d_forall_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_exists_sftd_eq"><span class="id" title="definition">d_exists_sftd_eq</span></a>:<br/>
@@ -1049,6 +1089,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a>) <a class="idref" href="SetDef.set_language_with_definition_operator.html#p"><span class="id" title="variable">p</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eex</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_exists_sftd_eq"><span class="id" title="definition">d_exists_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_belongs_sftd_eq"><span class="id" title="definition">d_belongs_sftd_eq</span></a>:<br/>
@@ -1059,6 +1100,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_letter"><span class="id" title="constructor">d_letter</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#t"><span class="id" title="variable">t</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eb</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_belongs_sftd_eq"><span class="id" title="definition">d_belongs_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_equal_sftd_eq"><span class="id" title="definition">d_equal_sftd_eq</span></a>:<br/>
@@ -1069,6 +1111,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="SetDef.set_language_with_definition_operator.html#d_letter"><span class="id" title="constructor">d_letter</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#t"><span class="id" title="variable">t</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eeq</span> := <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_equal_sftd_eq"><span class="id" title="definition">d_equal_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal2"><span class="id" title="lemma">f_equal2</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_unique_sftd_eq"><span class="id" title="definition">d_unique_sftd_eq</span></a>:<br/>
@@ -1079,6 +1122,7 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a>) <a class="idref" href="SetDef.set_language_with_definition_operator.html#p"><span class="id" title="variable">p</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eu</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_unique_sftd_eq"><span class="id" title="definition">d_unique_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_exists_unique_sftd_eq"><span class="id" title="definition">d_exists_unique_sftd_eq</span></a>:        <br/>
@@ -1089,6 +1133,8 @@ The rest of this file deals with substitution of variable and establishes syntac
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="SetDef.set_language_with_definition_operator.html#C"><span class="id" title="variable">C</span></a>) <a class="idref" href="SetDef.set_language_with_definition_operator.html#p"><span class="id" title="variable">p</span></a>).<br/>
 
 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eeu</span>:= <span class="id" title="tactic">rewrite</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_exists_unique_sftd_eq"><span class="id" title="definition">d_exists_unique_sftd_eq</span></a>; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.0/stdlib//Coq.Init.Logic.html#f_equal"><span class="id" title="lemma">f_equal</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eeua</span>:= <span class="id" title="tactic">apply</span> <a class="idref" href="SetDef.set_language_with_definition_operator.html#d_exists_unique_sftd_eq"><span class="id" title="definition">d_exists_unique_sftd_eq</span></a>.<br/>
 
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a name="d_exun_belongs_letter_prop_sftd_eq"><span class="id" title="definition">d_exun_belongs_letter_prop_sftd_eq</span></a>:        <br/>

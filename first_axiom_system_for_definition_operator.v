@@ -296,9 +296,10 @@ Section A_first_proof_system_for_D_Prop.
       rewrite E1; apply fd_letter_special_case_ax.
       simpl.
       assert (
-          d_prop_change_of_context (option C0) (d_prop_constant_embedding C0 f) 
-                                   (option B)
-                                   (option_rect (fun _ : option C0 => option B) (fun a : C0 => Some (env a)) None)
+          d_prop_change_of_context
+            (option C0) (d_prop_constant_embedding C0 f) 
+            (option B)
+            (option_rect (fun _ : option C0 => option B) (fun a : C0 => Some (env a)) None)
           =
           d_prop_constant_embedding B (d_prop_change_of_context C0 f B env)
         ) as E2.
@@ -971,12 +972,12 @@ Section A_first_proof_system_for_D_Prop.
 
 
     
-    Fixpoint first_d_prop_language_conservativity_property
+    Fixpoint first_d_prop_elimination_of_definitions
              (C:Type) (p:DP C) (k:C) (T: DP C -> Type) {struct p}:
       first_d_proof
         C k T
         (d_equiv C p (sf_to_d_translation C (d_exun_translation_prop C k p)))
-    with first_d_term_language_conservativity_property
+    with first_d_term_elimination_of_definitions
            (C:Type) (t:DT C) (k:C) (T: DP C -> Type) {struct t}:
            conservatively_equal
              C k T t
@@ -985,14 +986,14 @@ Section A_first_proof_system_for_D_Prop.
       destruct p.      
       simpl.
       rewrite d_exun_belongs_term_term_sftd_eq.      
-      destruct first_d_term_language_conservativity_property with (T:=T) (k:=k) (t:=d).
-      destruct first_d_term_language_conservativity_property with (T:=T) (k:=k) (t:=d0).
+      destruct first_d_term_elimination_of_definitions with (T:=T) (k:=k) (t:=d).
+      destruct first_d_term_elimination_of_definitions with (T:=T) (k:=k) (t:=d0).
       er.  
       simpl.
       et (d_exun_belongs_letter_prop C k x p).
       apply fd_logical_axiom; apply fd_belongs_characterization_ax.
       edxlp0. fdrefl. ap.
-      destruct first_d_term_language_conservativity_property with (T:=T) (k:=k) (t:=d0).
+      destruct first_d_term_elimination_of_definitions with (T:=T) (k:=k) (t:=d0).
       simpl.
       et (d_exun_belongs_prop_term C k p (d_letter C x)).
       apply fd_logical_axiom; apply fd_belongs_characterization_ax.
@@ -1003,16 +1004,16 @@ Section A_first_proof_system_for_D_Prop.
       et (d_exun_belongs_prop_term C k p (d_def C q0)).
       edxpt0. er. peq. ap. edxpt0. ap. fdrefl.
       simpl; er.
-      simpl; ei. apply first_d_prop_language_conservativity_property.
-      apply first_d_prop_language_conservativity_property.
+      simpl; ei. apply first_d_prop_elimination_of_definitions.
+      apply first_d_prop_elimination_of_definitions.
       simpl.
       ef.
-      apply first_d_prop_language_conservativity_property.
+      apply first_d_prop_elimination_of_definitions.
       destruct t.
       simpl. apply ce_letter.
       simpl.
       apply ce_predicate.
-      apply first_d_prop_language_conservativity_property.
+      apply first_d_prop_elimination_of_definitions.
     Defined.              
 
     Definition strongly_equal (C:Type) (k:C) (T:DP C -> Type) (s t:DT C):=
@@ -1308,7 +1309,8 @@ Section A_first_proof_system_for_D_Prop.
           d_implies
             C (d_prop_letter_specify C x q)            
             (d_implies
-               C (d_prop_letter_specify C y q) (d_equal C (d_letter C x) (d_letter C y)))
+               C (d_prop_letter_specify C y q)
+               (d_equal C (d_letter C x) (d_letter C y)))
           =
           d_prop_letter_specify
             C x
@@ -1316,16 +1318,21 @@ Section A_first_proof_system_for_D_Prop.
                (option C)
                (Some y)
                (
-                 d_implies (option (option C))
-                           (d_prop_change_of_context (option C) q (option (option C))
-                                                     (option_rect (fun _ : option C => option (option C))
-                                                                  (fun a : C => Some (Some a)) (Some None)))
-                           (d_implies (option (option C))
-                                      (d_prop_change_of_context (option C) q (option (option C))
-                                                                (option_rect (fun _ : option C => option (option C))
-                                                                             (fun a : C => Some (Some a)) None))
-                                      (d_equal (option (option C)) (d_letter (option (option C)) (Some None))
-                                               (d_letter (option (option C)) None))))
+                 d_implies
+                   (option (option C))
+                   (d_prop_change_of_context
+                      (option C) q (option (option C))
+                      (option_rect (fun _ : option C => option (option C))
+                                   (fun a : C => Some (Some a)) (Some None)))
+                   (d_implies
+                      (option (option C))
+                      (d_prop_change_of_context
+                         (option C) q (option (option C))
+                         (option_rect
+                            (fun _ : option C => option (option C))
+                            (fun a : C => Some (Some a)) None))
+                      (d_equal (option (option C)) (d_letter (option (option C)) (Some None))
+                               (d_letter (option (option C)) None))))
             )                   
         ) as E1. unfold d_prop_letter_specify.
       repeat rewrite d_implies_coc_eq.
@@ -1513,9 +1520,9 @@ Section A_first_proof_system_for_D_Prop.
           (X:= FDCPIW
                  (option C) (Some k)
                  (add_item (DP (option C))
-                                                                 (d_theory_constant_embedding C
-                                                                                              (add_item (DP C) T
-                                                                                                                                              (d_belongs C (d_letter C x) (d_letter C u)))) q)
+                           (d_theory_constant_embedding C
+                                                        (add_item (DP C) T
+                                                                  (d_belongs C (d_letter C x) (d_letter C u)))) q)
           ).
       simpl.
       apply fd_equal_elim_belongs_letter.
@@ -1941,10 +1948,13 @@ Section A_first_proof_system_for_D_Prop.
       apply fd_theory_axiom.
       apply base_hyp_d.
       assert (
-          d_exists_unique (option C)
-                          (d_prop_change_of_context (option C) d (option (option C))
-                                                    (option_rect (fun _ : option C => option (option C)) (fun a : C => Some (Some a))
-                                                                 None)) =
+          d_exists_unique
+            (option C)
+            (d_prop_change_of_context
+               (option C) d (option (option C))
+               (option_rect
+                  (fun _ : option C => option (option C)) (fun a : C => Some (Some a))
+                  None)) =
           d_prop_constant_embedding C (d_exists_unique C d)
         ) as E1.
       unfold d_prop_constant_embedding.
